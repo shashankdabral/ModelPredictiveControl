@@ -100,8 +100,6 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
-          double steer_value;
-          double throttle_value;
 
           Eigen::VectorXd ptsx_car(ptsx.size());
           Eigen::VectorXd ptsy_car(ptsy.size());
@@ -126,7 +124,7 @@ int main() {
           psi = 0 - v / Lf * steer_value * latency;   // psi:  psi0 = 0, due to the car coordinate system
           double epsi = 0 - atan(coeffs[1]) - v / Lf * steer_value * latency;
           double cte = polyeval(coeffs, 0) - 0 + v * sin(0- atan(coeffs[1])) * latency;
-          v += throttle * latency;
+          v += throttle_value * latency;
 
           state << px, py, psi, v, cte, epsi;
 

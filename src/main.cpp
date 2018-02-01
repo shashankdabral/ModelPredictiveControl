@@ -100,9 +100,18 @@ int main() {
           */
           double steer_value;
           double throttle_value;
-	  vector<double> solution = mpc.solve(state,coeffs);
+	  auto coeffs = polyfit(ptsx_car,ptsy_car,3);
+	  Eigen::VectorXd state(6);
+	  double cte = polyeval(coeffs,0);
+	  double epsi = -atan(coeffs[1]);
+	  state << 0,0,0,v,cte,epsi;
+
+	  // Add latency of 100 ms later
 	  
-          steer_value =  -1.0 * soluiton[0];
+	 
+	  vector<double> solution = mpc.Solve(state,coeffs);
+	  
+          steer_value =  -1.0 * solution[0];
 	  throttle_value = solution[1];
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.

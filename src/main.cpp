@@ -91,6 +91,8 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+	  double steer_value = j[1]["steering_angle"];
+	  double throttle_value = j[1]["throttle"];
 
           /*
           * TODO: Calculate steering angle and throttle using MPC.
@@ -109,7 +111,6 @@ int main() {
               double dy = ptsy[i] - py;
               ptsx_car[i] = dx * cos(-psi) - dy * sin(-psi);
               ptsy_car[i] = dx * sin(-psi) + dy * cos(-psi);
-            }
           }
 
 	  auto coeffs = polyfit(ptsx_car,ptsy_car,3);
@@ -119,13 +120,13 @@ int main() {
 	  /* Predict next state for 100 ms delay */
           double latency  = .1;
 	  double Lf = 2.67;
-	  v * = 0.44704; // m/s vs mph
+	  v *= 0.44704; // m/s vs mph
           px = 0 + v * cos(0) * latency;            // px:  px0 = 0, due to the car coordinate system
           py = 0 + v * sin(0) * latency;;           // py:  psi=0 and y is point to the left of the car
-          psi = 0 - v / Lf * steer_angle * latency;   // psi:  psi0 = 0, due to the car coordinate system
-          double epsi = 0 - atan(coeffs[1]) - v / Lf * steer_angle * latency;
+          psi = 0 - v / Lf * steer_value * latency;   // psi:  psi0 = 0, due to the car coordinate system
+          double epsi = 0 - atan(coeffs[1]) - v / Lf * steer_value * latency;
           double cte = polyeval(coeffs, 0) - 0 + v * sin(0- atan(coeffs[1])) * latency;
-          v += acceleration * latency;
+          v += throttle_value * latency;
 
           state << px, py, psi, v, cte, epsi;
 

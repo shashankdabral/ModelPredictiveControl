@@ -100,11 +100,11 @@ int main() {
           */
           double steer_value;
           double throttle_value;
-	  auto coeffs = polyfit(ptsx_car,ptsy_car,3);
+	  auto coeffs = polyfit(ptsx,ptsy,3);
 	  Eigen::VectorXd state(6);
 	  double cte = polyeval(coeffs,0);
 	  double epsi = -atan(coeffs[1]);
-	  state << 0,0,0,v,cte,epsi;
+	  state << px,py,psi,v,cte,epsi;
 
 	  // Add latency of 100 ms later
 	  

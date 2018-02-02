@@ -125,11 +125,11 @@ int main() {
           px = 0 + v * cos(0) * latency;            // px:  px0 = 0, due to the car coordinate system
           py = 0 + v * sin(0) * latency;;           // py:  psi=0 and y is point to the left of the car
           psi = 0 - v / Lf * steer_value * latency;   // psi:  psi0 = 0, due to the car coordinate system
-          double epsi = 0 - atan(coeffs[1]) - v / Lf * steer_value * latency;
-          double cte = polyeval(coeffs, 0) - 0 + v * sin(0- atan(coeffs[1])) * latency;
-          v += throttle_value * latency;
+          double epsi = 0 - atan(coeffs[1]);
+          double cte = polyeval(coeffs, 0);
+          v += acc * latency;
 
-          state << px, py, psi, v, cte, epsi;
+          state << 0,0,0, v, cte, epsi;
 
 	 
 	  auto vars = mpc.Solve(state,coeffs);

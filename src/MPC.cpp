@@ -48,8 +48,8 @@ class FG_eval {
     
     fg[0] =0 ; /* Define the cost function here */
     for (t=0;t<N;t++) {
-        fg[0] =+ 1000*  CppAD::pow(vars[cte_start +t],2); //Cross track error
-	fg[0] += 1000* CppAD::pow(vars[epsi_start+t],2); // psi error
+        fg[0] =+ 2000*  CppAD::pow(vars[cte_start +t],2); //Cross track error
+	fg[0] += 2000* CppAD::pow(vars[epsi_start+t],2); // psi error
 	fg[0] += CppAD::pow(vars[v_start+t]-ref_v,2);
     } // For int t
 

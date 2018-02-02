@@ -48,8 +48,8 @@ class FG_eval {
     
     /* Define the cost function here */
     for (t=0;t<N;t++) {
-        fg[0] += 2000*  CppAD::pow(vars[cte_start +t],2); //Cross track error
-	fg[0] += 2000* CppAD::pow(vars[epsi_start+t],2); // psi error
+        fg[0] += 3000*  CppAD::pow(vars[cte_start +t],2); //Cross track error
+	fg[0] += 3000* CppAD::pow(vars[epsi_start+t],2); // psi error
 	fg[0] += CppAD::pow(vars[v_start+t]-ref_v,2);
     } // For int t
 
@@ -61,7 +61,7 @@ class FG_eval {
 
     // Temporal smoothening of actuators
     for (t=0;t<N-2;t++) {
-	fg[0] += 200*CppAD::pow( (vars[delta_start +t +1]- vars[delta_start+t]),2);
+	fg[0] += 100*CppAD::pow( (vars[delta_start +t +1]- vars[delta_start+t]),2);
 	fg[0] += 10*  CppAD::pow( (vars[a_start +t +1]- vars[a_start+t]),2);
     }
 

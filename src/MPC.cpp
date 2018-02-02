@@ -20,7 +20,7 @@ double dt = 0.1;
 //
 // This is the length from front to CoG that has a similar radius.
 const double Lf = 2.67;
-double ref_v = 70;
+double ref_v = 100;
 size_t x_start = 0;
 size_t y_start = x_start + N;
 size_t psi_start = y_start + N;
@@ -46,9 +46,9 @@ class FG_eval {
     // NOTE: You'll probably go back and forth between this function and
     // the Solver function below.
     
-    fg[0] =0 ; /* Define the cost function here */
+    /* Define the cost function here */
     for (t=0;t<N;t++) {
-        fg[0] =+ 2000*  CppAD::pow(vars[cte_start +t],2); //Cross track error
+        fg[0] += 2000*  CppAD::pow(vars[cte_start +t],2); //Cross track error
 	fg[0] += 2000* CppAD::pow(vars[epsi_start+t],2); // psi error
 	fg[0] += CppAD::pow(vars[v_start+t]-ref_v,2);
     } // For int t

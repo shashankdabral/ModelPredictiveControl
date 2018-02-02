@@ -104,36 +104,45 @@ int main() {
           double throttle_value;
           double Lf = 2.67;
 
-          Eigen::VectorXd ptsx_car(ptsx.size());
-          Eigen::VectorXd ptsy_car(ptsy.size());
-
-          for(size_t i=0; i< ptsx.size(); i++){
-              double dx = ptsx[i] - px;
-              double dy = ptsy[i] - py;
-              ptsx_car[i] = dx * cos(-psi) - dy * sin(-psi);
-              ptsy_car[i] = dx * sin(-psi) + dy * cos(-psi);
+          //predict state in 100ms
+          double latency_in_sec = 0.1;
+          
+          //Only if you have a latency predict ahead
+          if(latency_in_sec > 0.0) {
+            px = px + v * cos(psi) * latency_in_sec;
+            py = py + v * sin(psi) * latency_in_sec;
+            //Make sure psi at t+1 is psi at t "minus" the update
+            psi = psi - v * delta/Lf * latency_in_sec;
+            v = v + acc * latency_in_sec;
           }
 
-	  auto coeffs = polyfit(ptsx_car,ptsy_car,3);
-	  Eigen::VectorXd state(6); // x,y,psi,v,cte,epsi
+          //Vectors having waypoints adjusted to local car co-ordinate system
+          Eigen::VectorXd ptsx_v(ptsx.size());
+          Eigen::VectorXd ptsy_v(ptsy.size());
 
+          //Convert from global co-ordinates to local
+          //Adjust for translation first, followed by rotation
+          //Notice that rotation equations are adjusted for -psi
+          for(size_t i = 0; i < ptsx.size(); i++) {
+            ptsx_v[i] = (ptsx[i] - px) * cos(psi) + (ptsy[i] - py) * sin(psi);
+            ptsy_v[i] = (ptsy[i] - py) * cos(psi) - (ptsx[i] - px) * sin(psi);
+          }
 
-	  /* Predict next state for 100 ms delay */
-          double latency  = .1;
-	  
-	  v *= 0.44704; // m/s vs mph
-          px = 0 + v * cos(0) * latency;            // px:  px0 = 0, due to the car coordinate system
-          py = 0 + v * sin(0) * latency;;           // py:  psi=0 and y is point to the left of the car
-          psi = 0 - v / Lf * delta * latency;   // psi:  psi0 = 0, due to the car coordinate system
-          double epsi = 0 - atan(coeffs[1]);
+          // Fit a polynomial to the above x and y coordinates
+          auto coeffs = polyfit(ptsx_v, ptsy_v, 3);
+
+          //As car's position and orientation is adjusted to local co-ordinates, px, py and psi must be zero here
           double cte = polyeval(coeffs, 0);
-          v += acc * latency;
+          double epsi = -atan(coeffs[1]);
 
-          state << 0,0,0, v, cte, epsi;
+          Eigen::VectorXd state(6);
+          state << 0, 0, 0, v, cte, epsi;
 
-	 
-	  auto vars = mpc.Solve(state,coeffs);
-	  
+          auto vars = mpc.Solve(state, coeffs);
+
+          //Correct the steering values in radians with a max angle of 25deg 
+          //The first two values returned is steering angle and acceleration
+          //Normalize by Lf here as delta lower/upper bounds are scaled by Lf
           steer_value = -1 * vars[0] / (deg2rad(25) * Lf);
           throttle_value = vars[1];
           json msgJson;
@@ -163,9 +172,9 @@ int main() {
           vector<double> next_x_vals;
           vector<double> next_y_vals;
 
-          for(int i = 0; i < ptsx_car.size(); i++) {
-            next_x_vals.push_back(ptsx_car[i]);
-            next_y_vals.push_back(ptsy_car[i]);
+          for(int i = 0; i < ptsx_v.size(); i++) {
+            next_x_vals.push_back(ptsx_v[i]);
+            next_y_vals.push_back(ptsy_v[i]);
           } 
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system

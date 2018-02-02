@@ -124,7 +124,7 @@ int main() {
 	  v *= 0.44704; // m/s vs mph
           px = 0 + v * cos(0) * latency;            // px:  px0 = 0, due to the car coordinate system
           py = 0 + v * sin(0) * latency;;           // py:  psi=0 and y is point to the left of the car
-          psi = 0 - v / Lf * steer_value * latency;   // psi:  psi0 = 0, due to the car coordinate system
+          psi = 0 - v / Lf * delta * latency;   // psi:  psi0 = 0, due to the car coordinate system
           double epsi = 0 - atan(coeffs[1]);
           double cte = polyeval(coeffs, 0);
           v += acc * latency;
@@ -163,9 +163,9 @@ int main() {
           vector<double> next_x_vals;
           vector<double> next_y_vals;
 
-          for(int i = 0; i < ptsx_v.size(); i++) {
-            next_x_vals.push_back(ptsx_v[i]);
-            next_y_vals.push_back(ptsy_v[i]);
+          for(int i = 0; i < ptsx_car.size(); i++) {
+            next_x_vals.push_back(ptsx_car[i]);
+            next_y_vals.push_back(ptsy_car[i]);
           } 
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system

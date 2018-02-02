@@ -104,7 +104,7 @@ class FG_eval {
       AD<double> a0     = vars[a_start + t - 1];
 
       // Predict Y (f0)
-      AD<double> f0     = coeffs[0] + coeffs[1] * x0 + (coeff[2] * x0 *x0) + (coeffs[3] * x0 *x0 *x0; 
+      AD<double> f0     = coeffs[0] + coeffs[1] * x0 + (coeffs[2] * x0 *x0) + (coeffs[3] * x0 *x0 *x0); 
       // psides = tan-1(f'x) -> fx = c0 + c1*x0 -> f'x = c1
 	  //3rd order -> fx = c0 + c1*x0 +c2*x0^2 + c3 * x0^3
 	  // f'x -> c1 + 2*c2*x0 + 3*c3*x0*x0

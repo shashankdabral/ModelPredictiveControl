@@ -132,10 +132,10 @@ int main() {
           state << px, py, psi, v, cte, epsi;
 
 	 
-	  vector<double> solution = mpc.Solve(state,coeffs);
+	  auto vars = mpc.Solve(state,coeffs);
 	  
-          steer_value =  -1.0 * solution[0] /(deg2rad(25) * Lf);
-	  throttle_value = solution[1];
+          steer_value = -1 * vars[0] / (deg2rad(25) * Lf);
+          throttle_value = vars[1];
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
